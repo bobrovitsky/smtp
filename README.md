@@ -1,1 +1,2 @@
-# fork of standard net/smtp library with extended responses
+# smtp 
+fork of standard golang net/smtp library with extended responses
