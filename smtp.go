@@ -44,6 +44,14 @@ type Client struct {
 	localName  string // the name to use in HELO/EHLO
 	didHello   bool   // whether we've said HELO/EHLO
 	helloError error  // the error from the hello
+	// last response
+	Response *Response
+}
+
+// struct ot hold last response
+type Response struct {
+	Code int
+	Text string
 }
 
 // Dial returns a new Client connected to an SMTP server at addr.
@@ -109,6 +117,7 @@ func (c *Client) cmd(expectCode int, format string, args ...interface{}) (int, s
 	c.Text.StartResponse(id)
 	defer c.Text.EndResponse(id)
 	code, msg, err := c.Text.ReadResponse(expectCode)
+	c.Response = &Response{code, msg}
 	return code, msg, err
 }
 
@@ -265,7 +274,8 @@ type dataCloser struct {
 
 func (d *dataCloser) Close() error {
 	d.WriteCloser.Close()
-	_, _, err := d.c.Text.ReadResponse(250)
+	code, msg, err := d.c.Text.ReadResponse(250)
+	d.c.Response = &Response{code, msg}
 	return err
 }
 
