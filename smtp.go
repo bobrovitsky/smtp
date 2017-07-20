@@ -24,6 +24,7 @@ import (
 	"net"
 	"net/textproto"
 	"strings"
+	"log"
 )
 
 // A Client represents a client connection to an SMTP server.
@@ -69,12 +70,13 @@ func Dial(addr string) (*Client, error) {
 // server name to be used when authenticating.
 func NewClient(conn net.Conn, host string) (*Client, error) {
 	text := textproto.NewConn(conn)
-	_, _, err := text.ReadResponse(220)
+	code, msg, err := text.ReadResponse(220)
 	if err != nil {
 		text.Close()
 		return nil, err
 	}
-	c := &Client{Text: text, conn: conn, serverName: host, localName: "localhost"}
+	r := &Response{code, msg}
+	c := &Client{Text: text, conn: conn, serverName: host, localName: "localhost", Response: r}
 	return c, nil
 }
 
