@@ -24,7 +24,6 @@ import (
 	"net"
 	"net/textproto"
 	"strings"
-	"log"
 )
 
 // A Client represents a client connection to an SMTP server.
